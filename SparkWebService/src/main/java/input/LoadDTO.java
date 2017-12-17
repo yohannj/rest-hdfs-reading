@@ -1,0 +1,38 @@
+package input;
+
+import java.util.Set;
+
+public class LoadDTO {
+
+	private Set<String> aggregationColumns;
+	private String path;
+	private String viewName;
+
+	public LoadDTO() {
+	}
+
+	public Set<String> getAggregationColumns() {
+		return aggregationColumns;
+	}
+
+	public void setAggregationColumns(Set<String> aggregationColumns) {
+		this.aggregationColumns = aggregationColumns;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getViewName() {
+		return viewName;
+	}
+
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+
+}
