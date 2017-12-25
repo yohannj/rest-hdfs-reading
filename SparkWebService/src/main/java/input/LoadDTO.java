@@ -1,5 +1,6 @@
 package input;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class LoadDTO {
@@ -9,6 +10,7 @@ public class LoadDTO {
 	private String viewName;
 
 	public LoadDTO() {
+		this.aggregationColumns = Collections.emptySet();
 	}
 
 	public Set<String> getAggregationColumns() {

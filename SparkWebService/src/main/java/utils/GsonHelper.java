@@ -17,9 +17,6 @@ public class GsonHelper {
 		JsonToken token = in.peek();
 		if (token == JsonToken.NAME) {
 			return in.nextName();
-		} else if (token == JsonToken.NULL) {
-			in.nextNull();
-			return null;
 		} else {
 			throw new JsonParseException("Expected to find a label, but found " + token);
 		}

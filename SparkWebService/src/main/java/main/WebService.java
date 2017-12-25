@@ -1,6 +1,9 @@
 package main;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -63,10 +66,20 @@ public class WebService extends AbstractHandler {
 
 	private String load(String body) {
 		LoadDTO dto = GSON.fromJson(body, LoadDTO.class);
+		Dataset<Row> df = spark.read().parquet(dto.getPath());
 
 		String viewName = dto.getViewName();
-		Dataset<Row> df = spark.read().parquet(dto.getPath()); //TODO add group by
-		df.createOrReplaceTempView(viewName);
+		String tmpViewName = "TMP_" + viewName + "_" + new Date().getTime();
+		df.createOrReplaceTempView(tmpViewName);
+
+		Set<String> askedAggregations = dto.getAggregationColumns();
+		Set<String> dfMetrics = Arrays.stream(df.columns()).filter(c -> !askedAggregations.contains(c)).map(c -> "SUM(" + c + ")").collect(Collectors.toSet());
+		Query query = new Query(askedAggregations, dfMetrics, tmpViewName);
+
+		Dataset<Row> aggregatedDf = spark.sql(query.build());
+		aggregatedDf.createOrReplaceTempView(viewName);
+		aggregatedDf.persist();
+		aggregatedDf.count(); // Force persist to be computed to have the best performance even for the first query
 		return viewName;
 	}
 
