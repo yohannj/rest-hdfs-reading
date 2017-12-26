@@ -10,7 +10,7 @@ public class Main {
 		SparkSession spark = SparkSession.builder().sparkContext(SparkContext.getOrCreate()).getOrCreate();
 
 		Server server = new Server(1337);
-		server.setHandler(new WebService(spark));
+		server.setHandler(new RequestHandler(spark));
 
 		server.start();
 		server.join();

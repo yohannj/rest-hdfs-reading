@@ -1,17 +1,20 @@
 package input;
 
+import utils.ParseException;
+import utils.Query;
+
 public class QueryDTO {
 
-	private String query;
+	private Query query;
 
 	public QueryDTO() {
 	}
 
-	public String getQuery() {
+	public Query getQuery() {
 		return query;
 	}
 
-	public void setQuery(String query) {
-		this.query = query;
+	public void parseQuery(String query) throws ParseException {
+		this.query = new Query(query);
 	}
 }
