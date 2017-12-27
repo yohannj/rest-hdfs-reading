@@ -25,12 +25,12 @@ public class Query {
 	 * <code>SELECT aggregations,computedMetrics FROM viewName GROUP BY aggregations</code>
 	 * 
 	 * @param aggregations
-	 * @param computedMetrics
+	 * @param selectFields
 	 * @param viewName
 	 */
-	public Query(Collection<String> aggregations, Collection<String> computedMetrics, String viewName) {
+	public Query(Collection<String> aggregations, Collection<String> selectFields, String viewName) {
 		this.selectFields = new ArrayList<>();
-		this.selectFields.addAll(computedMetrics);
+		this.selectFields.addAll(selectFields);
 		this.aggregations = new ArrayList<>(aggregations);
 		this.viewName = viewName;
 	}

@@ -41,10 +41,10 @@ public class LoadService {
 		String tmpViewName = "TMP_" + viewName + "_" + new Date().getTime();
 		df.createOrReplaceTempView(tmpViewName);
 
-		Set<String> askedAggregations = dto.getAggregationColumns(); //FIXME name output columns
-		Set<String> dfMetrics = Arrays.stream(df.columns()).filter(c -> !askedAggregations.contains(c)).map(c -> "SUM(" + c + ") as " + c)
-				.collect(Collectors.toSet());
-		Query query = new Query(askedAggregations, dfMetrics, tmpViewName);
+		Set<String> groupByColumns = dto.getAggregationColumns();
+		Set<String> selectColumns = Arrays.stream(df.columns()).map(c -> groupByColumns.contains(c) ? c : "SUM(" + c + ") as " + c).collect(Collectors.toSet());
+
+		Query query = new Query(groupByColumns, selectColumns, tmpViewName);
 
 		Dataset<Row> aggregatedDf = spark.sql(query.build());
 		aggregatedDf.createOrReplaceTempView(viewName);
