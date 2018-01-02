@@ -17,8 +17,8 @@ fi
 
 echo "Latest version is $LATEST_VERSION"
 if [ -d "apache-$LATEST_VERSION/" ]; then
-  echo "Found folder apache-$LATEST_VERSION/. Drill seems to have already been installed. Installation will not pursue."
-  exit -1;
+	echo "Found folder apache-$LATEST_VERSION/. Drill seems to have already been installed. Installation will not pursue."
+	exit -1;
 fi
 
 if [ ! -f "apache-$LATEST_VERSION.tar.gz" ]; then
