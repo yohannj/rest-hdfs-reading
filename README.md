@@ -5,10 +5,12 @@ The goal is to propose installation guide and benchmark instructions for a varie
 ## Documentation
 For more information on this project, check the [wiki pages](https://github.com/yohannj/rest-hdfs-reading/wiki).
 
-[Datasets](https://github.com/yohannj/rest-hdfs-reading/wiki/Datasets) used in benchmarks
+## Solutions
+[Apache-Drill](https://github.com/yohannj/rest-hdfs-reading/wiki/Apache-Drill)
 
+[Apache-Ignite](https://github.com/yohannj/rest-hdfs-reading/wiki/Apache-Ignite)
 
-Solutions tested: [Apache-Drill](https://github.com/yohannj/rest-hdfs-reading/wiki/Apache-Drill), [Apache-Ignite](https://github.com/yohannj/rest-hdfs-reading/wiki/Apache-Ignite), [Apache-Spark](https://github.com/yohannj/rest-hdfs-reading/wiki/Web-service-on-Spark)
+[Apache-Spark](https://github.com/yohannj/rest-hdfs-reading/wiki/Web-service-on-Spark)
 
 ## Links
 [Github issues](https://github.com/yohannj/rest-hdfs-reading/issues)
