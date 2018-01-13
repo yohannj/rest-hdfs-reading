@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import utils.EFileFormat;
 import utils.TestHelper;
 
 public class LoadTypeAdapterTest {
@@ -29,6 +30,7 @@ public class LoadTypeAdapterTest {
 
 		assertEquals("/some/path", dto.getPath());
 		assertEquals("some_view_name", dto.getViewName());
+		assertEquals(EFileFormat.PQT, dto.getFormat());
 	}
 
 	@Test
@@ -39,6 +41,7 @@ public class LoadTypeAdapterTest {
 		assertTrue(aggregationColumns.isEmpty());
 		assertEquals("/some/path", dto.getPath());
 		assertEquals("some_view_name", dto.getViewName());
+		assertEquals(EFileFormat.CSV, dto.getFormat());
 	}
 
 }

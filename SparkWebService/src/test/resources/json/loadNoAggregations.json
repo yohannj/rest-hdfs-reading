@@ -1,4 +1,5 @@
 {
 	"path": "/some/path",
-	"viewName": "some_view_name"
+	"viewName": "some_view_name",
+	"format": "CSV"
 }

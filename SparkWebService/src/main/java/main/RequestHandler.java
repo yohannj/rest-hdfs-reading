@@ -14,6 +14,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import utils.Context;
+import utils.EFileSystem;
 import webservice.LoadService;
 import webservice.QueryService;
 
@@ -24,9 +25,9 @@ public class RequestHandler extends AbstractHandler {
 	private final LoadService loadService;
 	private final QueryService queryService;
 
-	public RequestHandler(SparkSession spark) {
+	public RequestHandler(SparkSession spark, EFileSystem filesystem) {
 		Context c = new Context(spark);
-		this.loadService = new LoadService(c);
+		this.loadService = new LoadService(c, filesystem);
 		this.queryService = new QueryService(c);
 	}
 
@@ -64,4 +65,5 @@ public class RequestHandler extends AbstractHandler {
 		LOGGER.error("Failed to manage request", t);
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	}
+
 }

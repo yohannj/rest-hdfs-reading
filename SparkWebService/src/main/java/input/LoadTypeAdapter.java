@@ -11,6 +11,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import utils.Constant;
+import utils.EFileFormat;
 import utils.GsonHelper;
 
 public class LoadTypeAdapter extends TypeAdapter<LoadDTO> {
@@ -25,14 +26,21 @@ public class LoadTypeAdapter extends TypeAdapter<LoadDTO> {
 		LoadDTO dto = new LoadDTO();
 
 		GsonHelper.readObject(in).forEach((k, v) -> {
-			if ("AggregationColumns".equalsIgnoreCase(k)) {
+			switch (k.toLowerCase()) {
+			case "aggregationcolumns":
 				String[] columns = v.split(Constant.CSV_SEPARATOR);
 				dto.setAggregationColumns(new HashSet<>(Arrays.asList(columns)));
-			} else if ("Path".equalsIgnoreCase(k)) {
+				break;
+			case "path":
 				dto.setPath(v);
-			} else if ("ViewName".equalsIgnoreCase(k)) {
+				break;
+			case "viewname":
 				dto.setViewName(v);
-			} else {
+				break;
+			case "format":
+				dto.setFormat(EFileFormat.valueOf(v.toUpperCase()));
+				break;
+			default:
 				throw new IllegalArgumentException("Unknown label found in json: " + k);
 			}
 		});
