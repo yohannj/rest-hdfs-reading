@@ -5,19 +5,32 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Query {
 
-	private static final Pattern QUERY_PARSER = Pattern.compile("^SELECT (.*?) FROM (\\w+)(?: GROUP BY (.*?))?$", Pattern.CASE_INSENSITIVE);
+	private static final Pattern QUERY_PARSER;
 	private static final Pattern AGGREGATION_PARSER = Pattern.compile("^\\w+$");
-	private static final Pattern METRIC_PARSER = Pattern.compile("^(\\w+)\\((\\w+)\\)$");
+	private static final Pattern METRIC_PARSER = Pattern.compile("^(?<aggFunc>\\w+)\\((?<fieldName>\\w+)\\)$");
 	private static final String FIELD_SEPARATOR = ",";
+	static {
+		StringBuilder queryParserBuilder = new StringBuilder();
+		queryParserBuilder.append("^");
+		queryParserBuilder.append("SELECT (?<selectFields>.*?)");
+		queryParserBuilder.append(" FROM (?<viewName>\\w+)");
+		queryParserBuilder.append("(?: WHERE (?<whereClause>.*?))?");
+		queryParserBuilder.append("(?: GROUP BY (?<groupByClause>.*?))?");
+		queryParserBuilder.append("$");
+
+		QUERY_PARSER = Pattern.compile(queryParserBuilder.toString(), Pattern.CASE_INSENSITIVE);
+	}
 
 	private List<String> selectFields;
-	private List<String> aggregations;
+	private List<String> groupByClause;
+	private String whereClause;
 	private String viewName;
 
 	/**
@@ -31,7 +44,8 @@ public class Query {
 	public Query(Collection<String> aggregations, Collection<String> selectFields, String viewName) {
 		this.selectFields = new ArrayList<>();
 		this.selectFields.addAll(selectFields);
-		this.aggregations = new ArrayList<>(aggregations);
+		this.groupByClause = new ArrayList<>(aggregations);
+		this.whereClause = "";
 		this.viewName = viewName;
 	}
 
@@ -47,12 +61,13 @@ public class Query {
 
 		Matcher m = QUERY_PARSER.matcher(singleLineQuery);
 		if (m.find()) {
-			this.selectFields = Arrays.stream(m.group(1).split(FIELD_SEPARATOR)).collect(Collectors.toList());
-			this.aggregations = m.group(3) == null ? Collections.emptyList() : Arrays.stream(m.group(3).split(FIELD_SEPARATOR)).collect(Collectors.toList());
-			this.viewName = m.group(2);
+			this.selectFields = readList(m, "selectFields");
+			this.whereClause = Optional.ofNullable(m.group("whereClause")).orElse("");
+			this.groupByClause = readList(m, "groupByClause");
+			this.viewName = m.group("viewName");
 		} else {
 			throw new ParseException(
-					"Unable to parse input query. Expected a query in the form 'SELECT column1, column2, sum(column3) FROM my_view GROUP BY column1, column2'.");
+					"Unable to parse input query. Expected a query in the form 'SELECT column1, column2, sum(column3) FROM my_view WHERE column1 > x GROUP BY column1, column2'.");
 		}
 
 		ensureQueryValid();
@@ -64,17 +79,31 @@ public class Query {
 
 	public String build() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT ").append(String.join(Constant.CSV_SEPARATOR, this.selectFields)).append(" FROM ").append(viewName);
+		query.append("SELECT ").append(String.join(Constant.CSV_SEPARATOR, selectFields)).append(" FROM ").append(viewName);
 
-		if (!aggregations.isEmpty()) {
-			query.append(" GROUP BY ").append(String.join(Constant.CSV_SEPARATOR, this.aggregations));
+		if (!whereClause.isEmpty()) {
+			query.append(" WHERE ").append(whereClause);
+		}
+
+		if (!groupByClause.isEmpty()) {
+			query.append(" GROUP BY ").append(String.join(Constant.CSV_SEPARATOR, groupByClause));
 		}
 
 		return query.toString();
 	}
 
+	private List<String> readList(Matcher m, String groupName) {
+		String val = m.group(groupName);
+		return val == null ? Collections.emptyList() : Arrays.stream(val.split(FIELD_SEPARATOR)).collect(Collectors.toList());
+	}
+
+	/**
+	 * Some basic check to ensure the query is valid
+	 * 
+	 * @throws ParseException
+	 */
 	private void ensureQueryValid() throws ParseException {
-		for (String agg : aggregations) {
+		for (String agg : groupByClause) {
 			Matcher m = AGGREGATION_PARSER.matcher(agg);
 			if (!m.find()) {
 				throw new ParseException("Found an incorrectly formatted aggregate in GROUP BY: " + agg);
@@ -87,7 +116,7 @@ public class Query {
 
 		for (String field : selectFields) {
 			Matcher m = METRIC_PARSER.matcher(field);
-			if (!m.find() && !aggregations.contains(field)) {
+			if (!m.find() && !groupByClause.contains(field)) {
 				throw new ParseException("Expected " + field + " to be an aggregation but missing in GROUP BY columns.");
 			}
 		}

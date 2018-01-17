@@ -2,6 +2,7 @@ package main;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Rule;
@@ -18,7 +19,7 @@ public class QueryTest {
 
 	@Test
 	public void aggregationAndMetric() {
-		Query q = new Query(Collections.singleton("foo"), Collections.singleton("SUM(bar)"), "my_view");
+		Query q = new Query(Collections.singleton("foo"), Arrays.asList("foo", "SUM(bar)"), "my_view");
 
 		assertEquals("SELECT foo,SUM(bar) FROM my_view GROUP BY foo", q.build());
 	}
@@ -35,6 +36,20 @@ public class QueryTest {
 		Query q = new Query("SELECT foo, SUM(bar) FROM my_view GROUP BY foo");
 
 		assertEquals("SELECT foo,SUM(bar) FROM my_view GROUP BY foo", q.build());
+	}
+
+	@Test
+	public void parseWhereClause() throws ParseException {
+		Query q = new Query("SELECT SUM(bar) FROM my_view WHERE bar > 2");
+
+		assertEquals("SELECT SUM(bar) FROM my_view WHERE bar > 2", q.build());
+	}
+
+	@Test
+	public void parseFullQuery() throws ParseException {
+		Query q = new Query("SELECT foo, SUM(bar) FROM my_view WHERE a IN (1, 2, 3) OR 2 < bar GROUP BY foo");
+
+		assertEquals("SELECT foo,SUM(bar) FROM my_view WHERE a IN (1,2,3) OR 2 < bar GROUP BY foo", q.build());
 	}
 
 	@Test

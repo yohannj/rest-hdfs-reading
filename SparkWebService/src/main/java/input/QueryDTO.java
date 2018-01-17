@@ -1,6 +1,5 @@
 package input;
 
-import utils.ParseException;
 import utils.Query;
 
 public class QueryDTO {
@@ -14,7 +13,8 @@ public class QueryDTO {
 		return query;
 	}
 
-	public void parseQuery(String query) throws ParseException {
-		this.query = new Query(query);
+	public void setQuery(Query query) {
+		this.query = query;
 	}
+
 }

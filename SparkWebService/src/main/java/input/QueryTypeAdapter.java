@@ -11,6 +11,7 @@ import com.google.gson.stream.JsonWriter;
 
 import utils.GsonHelper;
 import utils.ParseException;
+import utils.Query;
 
 public class QueryTypeAdapter extends TypeAdapter<QueryDTO> {
 
@@ -26,7 +27,7 @@ public class QueryTypeAdapter extends TypeAdapter<QueryDTO> {
 		GsonHelper.readObject(in).forEach((k, v) -> {
 			if ("Query".equalsIgnoreCase(k)) {
 				try {
-					dto.parseQuery(v);
+					dto.setQuery(new Query(v));
 				} catch (ParseException e) {
 					throw new JsonParseException("Failed to parse given query", e);
 				}
