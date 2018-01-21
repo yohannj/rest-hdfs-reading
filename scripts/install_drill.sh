@@ -1,5 +1,4 @@
 #!/bin/bash
-
 echo "Retrieving latest drill version"
 read -r -d '' RETRIEVE_LATEST_VERSION << END
 my \$newest_version;
@@ -36,6 +35,11 @@ rm apache-$LATEST_VERSION.tar.gz
 echo "Archive deleted"
 ln -sfn apache-$LATEST_VERSION apache-drill
 echo "Symbolic link apache-drill created/updated to latest version"
+ln -sfn "$( cd "$(dirname $(dirname "$0"))" ; pwd -P)/config/ignite-conf/core-site.xml" apache-drill/conf/core-site.xml
+ln -sfn apache-ignite/libs/ignite-core-2.3.0.jar apache-drill/jars/3rdparty/ignite-core-2.3.0.jar
+ln -sfn apache-ignite/libs/ignite-hadoop/ignite-hadoop-2.3.0.jar apache-drill/jars/3rdparty/ignite-hadoop-2.3.0.jar
+ln -sfn apache-ignite/libs/ignite-shmem-1.0.0.jar apache-drill/jars/3rdparty/ignite-shmem-1.0.0.jar
+echo "Symbolic link towards apache-ignite library created/updated"
 
 echo "Installation successful"
 exit 0;
