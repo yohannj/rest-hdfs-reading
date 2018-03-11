@@ -1,0 +1,210 @@
+version: "3"
+services:
+  namenode:
+    image: hadoop-namenode
+    networks:
+      - hadoop
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "9000:9000"
+      - "9820:9820"
+      - "9870-9871:9870-9871"
+
+  resourcemanager:
+    image: hadoop-resourcemanager
+    depends_on:
+      - namenode
+    networks:
+      - hadoop
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "8030-8033:8030-8033"
+      - "8088:8088"
+      - "8090:8090"
+
+  historyserver:
+    image: hadoop-historyserver
+    depends_on:
+      - namenode
+    networks:
+      - hadoop
+    volumes:
+      - hadoop_historyserver:/hadoop/yarn/timeline
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "8188:8188"
+      - "8190:8190"
+      - "10200:10200"
+      - "19888:19888"
+
+  nodemanager:
+    image: hadoop-nodemanager
+    depends_on:
+      - namenode
+      - resourcemanager
+    networks:
+      - hadoop
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "8042:8042"
+      - "8044:8044"
+
+  datanode:
+    image: hadoop-datanode
+    depends_on:
+      - namenode
+    networks:
+      - hadoop
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "9864-9867:9864-9867"
+
+  spark-master:
+    image: spark-master
+    depends_on:
+      - namenode
+    networks:
+      - hadoop
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "6066:6066"
+      - "7077:7077"
+      - "8080:8080"
+
+  spark-slave:
+    image: spark-slave
+    depends_on:
+      - spark-master
+    networks:
+      - hadoop
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "1337:1337"
+      - "1338:1338"
+      - "4040-4050:4040-4050"
+      - "8081:8081"
+
+  spark-historyserver:
+    image: spark-historyserver
+    depends_on:
+      - namenode
+    networks:
+      - hadoop
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "18080:18080"
+
+  ignite:
+    image: ignite
+    depends_on:
+      - namenode
+    networks:
+      - hadoop
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "10500:10500"
+      - "11211:11211" 
+      - "31100-31200:31100-31200"
+      - "47100-47200:47100-47200"
+      - "47500-47600:47500-47600"
+      - "49128:49128"
+
+  drill:
+    image: drill
+    networks:
+      - hadoop
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "8047:8047"
+      - "31010-31012:31010-31012"
+
+  zookeeper1:
+    image: zookeeper
+    networks:
+      - hadoop
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
+
+  zookeeper2:
+    image: zookeeper
+    networks:
+      - hadoop
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "2182:2181"
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=zookeeper3:2888:3888
+
+  zookeeper3:
+    image: zookeeper
+    networks:
+      - hadoop
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "2183:2181"
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=0.0.0.0:2888:3888
+
+
+networks:
+  hadoop:
+
+volumes:
+  hadoop_namenode:
+    external: true
+  hadoop_datanode:
+    external: true
+  hadoop_historyserver:
+    external: true
+

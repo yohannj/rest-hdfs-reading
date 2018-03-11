@@ -37,6 +37,8 @@ public class RequestHandler extends AbstractHandler {
 
 		if (!"POST".equalsIgnoreCase(request.getMethod())) {
 			response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+			baseRequest.setHandled(true);
+			return;
 		}
 
 		try {
