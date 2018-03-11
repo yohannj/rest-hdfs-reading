@@ -1,7 +1,4 @@
 repositories {
-  flatDir {
-    dirs '../apache-ignite-libs', '../apache-ignite-libs/ignite-hadoop'
-  }
   jcenter()
 }
 
@@ -20,15 +17,14 @@ compileJava.options.encoding = 'UTF-8'
 
 dependencies {
 	compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
+	
 	onlyCompile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version: '3.0.0'
 	onlyCompile group: 'org.apache.spark', name: 'spark-core_2.11', version: '2.2.1'
     onlyCompile group: 'org.apache.spark', name: 'spark-sql_2.11', version: '2.2.1'
-	compile name: 'ignite-core-2.3.0'
-	compile name: 'ignite-shmem-1.0.0'
-	compile name: 'ignite-hadoop-2.3.0'
+	onlyCompile group: 'org.apache.ignite', name: 'ignite-core', version: '2.3.0'
+	onlyCompile group: 'org.gridgain', name: 'ignite-shmem', version: '1.0.0'
+	onlyCompile group: 'org.apache.ignite', name: 'ignite-hadoop', version: '2.3.0'
 	
-    
-    
 	testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
