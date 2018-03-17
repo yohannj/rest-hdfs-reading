@@ -21,7 +21,7 @@ RUN set -x \
 #ADD apache-drill-${DRILL_VERSION}.tar.gz /
 
 RUN \
-        wget https://dist.apache.org/repos/dist/release/drill/drill-1.12.0/apache-drill-${DRILL_VERSION}.tar.gz && \
+        wget https://dist.apache.org/repos/dist/release/drill/drill-${DRILL_VERSION}/apache-drill-${DRILL_VERSION}.tar.gz && \
         tar -xzf apache-drill-${DRILL_VERSION}.tar.gz && \
         rm -f apache-drill-${DRILL_VERSION}.tar.gz && \
         mkdir opt && \
