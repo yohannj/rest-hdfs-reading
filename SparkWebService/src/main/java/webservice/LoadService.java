@@ -61,7 +61,7 @@ public class LoadService {
 		String viewName = dto.getViewName();
 
 		switch (fileSystem) {
-		case HDFS:
+		case IN_MEMORY:
 			String tmpViewName = "TMP_" + viewName + "_" + new Date().getTime();
 			df.createOrReplaceTempView(tmpViewName);
 
@@ -76,6 +76,7 @@ public class LoadService {
 			aggregatedDf.persist();
 			aggregatedDf.count(); // Force persist to be computed to have the best performance even for the first query
 			break;
+		case HDFS:
 		case IGFS:
 			df.createOrReplaceTempView(viewName);
 			break;

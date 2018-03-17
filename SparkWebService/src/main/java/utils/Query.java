@@ -23,6 +23,7 @@ public class Query {
 		queryParserBuilder.append(" FROM (?<viewName>\\w+)");
 		queryParserBuilder.append("(?: WHERE (?<whereClause>.*?))?");
 		queryParserBuilder.append("(?: GROUP BY (?<groupByClause>.*?))?");
+		queryParserBuilder.append("(?: ORDER BY (?<orderByClause>.*?))?");
 		queryParserBuilder.append("$");
 
 		QUERY_PARSER = Pattern.compile(queryParserBuilder.toString(), Pattern.CASE_INSENSITIVE);
@@ -30,6 +31,7 @@ public class Query {
 
 	private List<String> selectFields;
 	private List<String> groupByClause;
+	private List<String> orderByClause;
 	private String whereClause;
 	private String viewName;
 
@@ -45,6 +47,7 @@ public class Query {
 		this.selectFields = new ArrayList<>();
 		this.selectFields.addAll(selectFields);
 		this.groupByClause = new ArrayList<>(aggregations);
+		this.orderByClause = Collections.emptyList();
 		this.whereClause = "";
 		this.viewName = viewName;
 	}
@@ -64,6 +67,7 @@ public class Query {
 			this.selectFields = readList(m, "selectFields");
 			this.whereClause = Optional.ofNullable(m.group("whereClause")).orElse("");
 			this.groupByClause = readList(m, "groupByClause");
+			this.orderByClause = readList(m, "orderByClause");
 			this.viewName = m.group("viewName");
 		} else {
 			throw new ParseException(
@@ -87,6 +91,10 @@ public class Query {
 
 		if (!groupByClause.isEmpty()) {
 			query.append(" GROUP BY ").append(String.join(Constant.CSV_SEPARATOR, groupByClause));
+		}
+
+		if (!orderByClause.isEmpty()) {
+			query.append(" ORDER BY ").append(String.join(Constant.CSV_SEPARATOR, orderByClause));
 		}
 
 		return query.toString();
@@ -116,7 +124,7 @@ public class Query {
 
 		for (String field : selectFields) {
 			Matcher m = METRIC_PARSER.matcher(field);
-			if (!m.find() && !groupByClause.contains(field)) {
+			if (!field.equals("*") && !m.find() && !groupByClause.contains(field)) {
 				throw new ParseException("Expected " + field + " to be an aggregation but missing in GROUP BY columns.");
 			}
 		}

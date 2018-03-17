@@ -1,7 +1,7 @@
 version: "3"
 services:
   namenode:
-    image: hadoop-namenode
+    image: yohannj/hadoop-namenode:v1
     networks:
       - hadoop
     volumes:
@@ -17,7 +17,7 @@ services:
       - "9870-9871:9870-9871"
 
   resourcemanager:
-    image: hadoop-resourcemanager
+    image: yohannj/hadoop-resourcemanager:v1
     depends_on:
       - namenode
     networks:
@@ -33,7 +33,7 @@ services:
       - "8090:8090"
 
   historyserver:
-    image: hadoop-historyserver
+    image: yohannj/hadoop-historyserver:v1
     depends_on:
       - namenode
     networks:
@@ -52,7 +52,7 @@ services:
       - "19888:19888"
 
   nodemanager:
-    image: hadoop-nodemanager
+    image: yohannj/hadoop-nodemanager:v1
     depends_on:
       - namenode
       - resourcemanager
@@ -67,7 +67,7 @@ services:
       - "8044:8044"
 
   datanode:
-    image: hadoop-datanode
+    image: yohannj/hadoop-datanode:v1
     depends_on:
       - namenode
     networks:
@@ -82,7 +82,7 @@ services:
       - "9864-9867:9864-9867"
 
   spark-master:
-    image: spark-master
+    image: yohannj/spark-master:v1
     depends_on:
       - namenode
     networks:
@@ -95,10 +95,10 @@ services:
     ports:
       - "6066:6066"
       - "7077:7077"
-      - "8080:8080"
+      - "8079:8080"
 
   spark-slave:
-    image: spark-slave
+    image: yohannj/spark-slave:v1
     depends_on:
       - spark-master
     networks:
@@ -108,13 +108,12 @@ services:
       restart_policy:
         condition: on-failure
     ports:
-      - "1337:1337"
-      - "1338:1338"
+      - "1337-1339:1337-1339"
       - "4040-4050:4040-4050"
       - "8081:8081"
 
   spark-historyserver:
-    image: spark-historyserver
+    image: yohannj/spark-historyserver:v1
     depends_on:
       - namenode
     networks:
@@ -128,7 +127,7 @@ services:
       - "18080:18080"
 
   ignite:
-    image: ignite
+    image: yohannj/ignite:v1
     depends_on:
       - namenode
     networks:
@@ -147,7 +146,7 @@ services:
       - "49128:49128"
 
   drill:
-    image: drill
+    image: yohannj/rest-hdfs-reading-drill:v1.12.0
     networks:
       - hadoop
     deploy:

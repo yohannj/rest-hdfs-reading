@@ -13,6 +13,7 @@ import org.apache.spark.sql.SparkSession;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
+import utils.Constant;
 import utils.Context;
 import utils.EFileSystem;
 import webservice.LoadService;
@@ -20,7 +21,16 @@ import webservice.QueryService;
 
 public class RequestHandler extends AbstractHandler {
 
+	private enum Method {
+		POST,
+		OPTIONS;
+	}
+
 	private static final Logger LOGGER = LogManager.getLogger(RequestHandler.class);
+	private static final String ALLOW_ORIGIN_WITHOUT_CREDENTIALS = "*";
+	private static final String HTTP_HEADERS_READ_BY_THE_SERVICE = "origin, content-type, accept";
+	private static final String METHODS_ALLOWED = "POST, OPTIONS";
+	private static final String PREFLIGHT_VALIDITY_TIME = "86400";
 
 	private final LoadService loadService;
 	private final QueryService queryService;
@@ -35,7 +45,17 @@ public class RequestHandler extends AbstractHandler {
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		LOGGER.info("New request on " + target);
 
-		if (!"POST".equalsIgnoreCase(request.getMethod())) {
+		response.setHeader(Constant.ACCESS_CONTROL_ALLOW_ORIGIN, ALLOW_ORIGIN_WITHOUT_CREDENTIALS);
+		response.setHeader(Constant.ACCESS_CONTROL_ALLOW_HEADERS, HTTP_HEADERS_READ_BY_THE_SERVICE);
+		response.setHeader(Constant.ACCESS_CONTROL_ALLOW_METHODS, METHODS_ALLOWED);
+		response.setHeader(Constant.ACCESS_CONTROL_MAX_AGE, PREFLIGHT_VALIDITY_TIME);
+
+		if (Method.OPTIONS.name().equalsIgnoreCase(request.getMethod())) {
+			baseRequest.setHandled(true);
+			return;
+		}
+
+		if (!Method.POST.name().equalsIgnoreCase(request.getMethod())) {
 			response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 			baseRequest.setHandled(true);
 			return;

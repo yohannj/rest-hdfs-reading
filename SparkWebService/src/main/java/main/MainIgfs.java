@@ -10,7 +10,7 @@ public class MainIgfs {
 
 	public static void main(String[] args) throws Exception {
 		SparkSession spark = SparkSession.builder().sparkContext(SparkContext.getOrCreate()).getOrCreate();
-		spark.sparkContext().hadoopConfiguration().set("fs.defaultFS", "igfs://igfs@/");
+		spark.sparkContext().hadoopConfiguration().set("fs.defaultFS", "igfs://igfs@ignite/");
 		spark.sparkContext().hadoopConfiguration().set("fs.igfs.impl", "org.apache.ignite.hadoop.fs.v1.IgniteHadoopFileSystem");
 		spark.sparkContext().hadoopConfiguration().set("fs.AbstractFileSystem.igfs.impl", "org.apache.ignite.hadoop.fs.v2.IgniteHadoopFileSystem");
 
