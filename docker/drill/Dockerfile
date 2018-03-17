@@ -17,12 +17,13 @@ RUN set -x \
 
 # Drill installation
 
-ADD apache-drill-${DRILL_VERSION}.tar.gz /
+#If you already have drill available, uncomment the following line, and comment wget, tar-xzf and rm -f in the next RUN command
+#ADD apache-drill-${DRILL_VERSION}.tar.gz /
 
 RUN \
-        #wget https://dist.apache.org/repos/dist/release/drill/drill-1.12.0/apache-drill-${DRILL_VERSION}.tar.gz && \
-        #tar -xzf apache-drill-${DRILL_VERSION}.tar.gz && \
-        #rm -f apache-drill-${DRILL_VERSION}.tar.gz && \
+        wget https://dist.apache.org/repos/dist/release/drill/drill-1.12.0/apache-drill-${DRILL_VERSION}.tar.gz && \
+        tar -xzf apache-drill-${DRILL_VERSION}.tar.gz && \
+        rm -f apache-drill-${DRILL_VERSION}.tar.gz && \
         mkdir opt && \
         mv apache-drill-${DRILL_VERSION} $DRILL_HOME && \
         echo 'PATH=$PATH:$DRILL_HOME/bin' >> ~/.bashrc
