@@ -5,12 +5,12 @@ The goal is to propose installation guide and benchmark instructions for a varie
 ## Documentation
 For more information on this project, check the [wiki pages](https://github.com/yohannj/rest-hdfs-reading/wiki).
 
-## Solutions
-[Apache-Drill](https://github.com/yohannj/rest-hdfs-reading/wiki/Apache-Drill)
+## Solutions / Technology used
+[Apache-Drill](https://drill.apache.org/), a query engine to read HDFS data.
 
-[Apache-Ignite](https://github.com/yohannj/rest-hdfs-reading/wiki/Apache-Ignite)
+[Apache-Ignite](https://ignite.apache.org/), used as an in memory file system over HDFS.
 
-[Apache-Spark](https://github.com/yohannj/rest-hdfs-reading/wiki/Web-service-on-Spark)
+A WebService running on [Apache-Spark](https://spark.apache.org/) as a long-running job. Serves as an alternative to Apache-Drill to query HDFS data.
 
 ## Links
 [Github issues](https://github.com/yohannj/rest-hdfs-reading/issues)
